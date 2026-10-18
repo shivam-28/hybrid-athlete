@@ -103,7 +103,7 @@ You need a free [Supabase](https://supabase.com) project and a free [Vercel](htt
    ```sql
    insert into public.signup_allowlist (pattern) values ('friend@example.com'), ('@family.dk');
    ```
-5. **Deploy to Vercel:** import the repo, set the function region to `fra1` (next to an EU database), and add the environment variables:
+5. **Deploy to Vercel:** import the repo (functions run in `fra1`, next to an EU database, via `vercel.json`; change it if your database is elsewhere) and add the environment variables:
 
    | Variable | Where to find it | Exposed to browser |
    |---|---|---|
