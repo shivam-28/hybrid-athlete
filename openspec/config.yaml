@@ -1,0 +1,39 @@
+schema: spec-driven
+
+context: |
+  Product: hybrid-athlete — open-source, multi-user fitness PWA for people combining strength training
+  with endurance running (marathon goal). Hosted by the maintainer for friends; anyone can self-host.
+  Primary devices: iPhone (installed to home screen) and Mac browser.
+
+  Tech stack: Next.js 16 (App Router, React 19, TypeScript strict) + Tailwind CSS 4, pnpm.
+  Supabase: Postgres (Row Level Security on every user table), Auth (email magic link), Storage (private buckets).
+  Hosting: Vercel. Tests: Vitest for unit/integration, Playwright for critical E2E flows.
+  Validation: Zod at every boundary (API routes, AI output, ingest payloads).
+
+  AI: Anthropic Claude API, bring-your-own key per user (stored encrypted, AES-256-GCM, server-only).
+  claude-opus-5-5 for vision (meals, body comp docs, progress photos) and plan generation;
+  claude-haiku-4-5 for parsing voice/text workout logs. All AI output is structured (tool use / JSON schema)
+  and validated with Zod before persisting. Meal, body-composition and plan AI output is confirmed/edited by the
+  user before saving; voice set logs auto-save only when unambiguous, always with undo + edit.
+  Speech-to-text: browser Web Speech API with iOS keyboard dictation fallback (no audio leaves the device to us).
+
+  Wearables: Garmin data via Apple Health using an iOS Shortcut that POSTs to a per-user token-authenticated
+  ingest endpoint, plus manual .FIT file upload. No Garmin/Strava API (Garmin program closed; Strava terms forbid AI use).
+
+  Domain conventions: metric units stored canonically (kg, cm, meters, seconds, kcal, grams); display units are a
+  user preference. Timestamps stored UTC (timestamptz); "day" boundaries computed in the user's timezone
+  (default Europe/Copenhagen). Nutrition targets are computed deterministically (never by the LLM);
+  the LLM only suggests foods/plans within those computed targets.
+
+  Delivery order (one OpenSpec change each): add-foundation -> add-workout-logging -> add-activity-sync ->
+  add-body-tracking -> add-nutrition -> add-coach. Later changes may depend on earlier ones, never the reverse.
+  Privacy: health data of EU users (GDPR special-category data). Host Supabase in an EU region, private storage,
+  strip EXIF from uploaded images, per-user export + hard delete.
+
+  Conventions: conventional commits; no dead code; no premature abstraction; tests first (Given/When/Then).
+
+rules:
+  proposal:
+    - Include a Non-goals section
+  tasks:
+    - Write test tasks before the implementation tasks they cover

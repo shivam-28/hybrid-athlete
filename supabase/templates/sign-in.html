@@ -1,0 +1,6 @@
+<h2>Sign in to hybrid-athlete</h2>
+<p>Your sign-in code:</p>
+<p style="font-size:28px;font-weight:700;letter-spacing:6px">{{ .Token }}</p>
+<p>Using the app installed on your home screen? Type this code in the app.</p>
+<p>On this device's browser you can also <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email">sign in with this link</a>.</p>
+<p>The code expires in 1 hour. If you didn't request it, ignore this email.</p>

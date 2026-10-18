@@ -1,0 +1,33 @@
+{
+  "count": 2,
+  "products": [
+    {
+      "code": "5711953068881",
+      "product_name": "Skyr Naturel",
+      "brands": "Arla",
+      "nutriments": {
+        "energy-kcal_100g": 63,
+        "proteins_100g": 11,
+        "carbohydrates_100g": 4,
+        "fat_100g": 0.2,
+        "sugars_100g": 4,
+        "saturated-fat_100g": 0.1,
+        "sodium_100g": 0.04,
+        "calcium_100g": 0.12,
+        "vitamin-d_100g": 0.0000001
+      }
+    },
+    {
+      "code": "1234567890123",
+      "product_name": "Skyr vanilla",
+      "brands": "Generic",
+      "nutriments": {
+        "energy_100g": 334.72,
+        "proteins_100g": 9,
+        "carbohydrates_100g": 9,
+        "fat_100g": 0.5
+      }
+    },
+    { "code": "999", "product_name": "Mystery product", "nutriments": {} }
+  ]
+}
