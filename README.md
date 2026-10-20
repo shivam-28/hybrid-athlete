@@ -94,11 +94,15 @@ You need a free [Supabase](https://supabase.com) project and a free [Vercel](htt
    # Load the exercise library (idempotent; re-run after upgrading)
    SUPABASE_URL=https://<ref>.supabase.co SUPABASE_SERVICE_ROLE_KEY=<service-role-key> pnpm seed:exercises
    ```
-3. **Auth settings** (Supabase dashboard → Authentication):
-   - *Hooks* → enable **Before User Created** → Postgres function `auth_hooks.before_user_created`.
-   - *Email Templates* → **Magic Link** and **Confirm signup**: paste [`supabase/templates/sign-in.html`](supabase/templates/sign-in.html). It contains both the link and the 6-digit code; the code is what makes sign-in work inside the installed iPhone app, which does not share cookies with Safari.
-   - *URL Configuration* → set **Site URL** to your Vercel URL and add `https://<your-domain>/**` to redirect URLs.
-   - Configure a custom SMTP sender for production (Supabase's built-in sender is rate-limited).
+3. **Auth settings** live in [`supabase/config.toml`](supabase/config.toml) under `[remotes.production]`: site URL, redirect URLs, 6-digit code length, the allowlist hook, the email template with link + code (the code is what makes sign-in work inside the installed iPhone app, which does not share cookies with Safari) and the SMTP sender.
+   - Replace `project_id` and the URLs with yours.
+   - A **custom SMTP sender is required**: Supabase's built-in sender only emails members of your Supabase organisation and cannot use custom templates on the free plan. A Gmail account with an [app password](https://myaccount.google.com/apppasswords) works (≈500 emails/day); so does any SMTP provider (adjust `host`/`port`).
+   - Preview and apply:
+     ```bash
+     export SUPABASE_SMTP_USER=you@gmail.com SUPABASE_SMTP_PASS=<app-password>
+     pnpm exec supabase config diff
+     pnpm exec supabase config push
+     ```
 4. **Invite-only (optional):** add rows to `public.signup_allowlist` in the SQL editor. Each row is an exact email (`friend@example.com`) or a domain (`@example.com`). An empty table means anyone can sign up. Existing users are never locked out.
    ```sql
    insert into public.signup_allowlist (pattern) values ('friend@example.com'), ('@family.dk');

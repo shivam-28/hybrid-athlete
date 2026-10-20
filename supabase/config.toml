@@ -420,3 +420,47 @@ enabled = true
 # formatted with uppercase keywords, indent 2, max width 180, trailing commas,
 # and column/key alignment. Set to "null" to emit raw, unformatted SQL.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":180,\"commaStyle\":\"trailing\"}"
+
+# Hosted production project (the maintainer's instance). Self-hosters: replace
+# project_id and the URLs with your own, then run `supabase config push`.
+[remotes.production]
+project_id = "tsyvifyilvaybduqrffn"
+
+[remotes.production.auth]
+site_url = "https://hybrid-athlete-phi.vercel.app"
+additional_redirect_urls = [
+  "https://hybrid-athlete-phi.vercel.app/**",
+  "https://hybrid-athlete-*-shivams-projects-bd6b70df.vercel.app/**",
+]
+
+[remotes.production.auth.email]
+max_frequency = "1m0s"
+
+# Custom sender (required to send the code template and to email non-members).
+# Values come from the environment at `supabase config push` time, never the repo.
+[remotes.production.auth.email.smtp]
+enabled = true
+host = "smtp.gmail.com"
+port = 587
+user = "env(SUPABASE_SMTP_USER)"
+pass = "env(SUPABASE_SMTP_PASS)"
+admin_email = "env(SUPABASE_SMTP_USER)"
+sender_name = "Hybrid Athlete"
+
+[remotes.production.auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
+# Local tests use generous limits; production keeps Supabase's protective defaults.
+[remotes.production.auth.rate_limit]
+email_sent = 30
+sign_in_sign_ups = 30
+token_verifications = 30
+
+# Keep the hosted project's own pooler sizing and storage features.
+[remotes.production.db.pooler]
+default_pool_size = 15
+max_client_conn = 200
+
+[remotes.production.storage.vector]
+enabled = false
