@@ -7,6 +7,7 @@ import { ProfileForm } from "@/components/profile-form";
 import { AiKeySettings } from "@/components/ai-key-settings";
 import { DeleteAccountDialog } from "@/components/delete-account-dialog";
 import { getAiKeyStatus } from "@/server/ai/keys";
+import { AI_MODELS } from "@/server/ai/client";
 import { AliasList } from "@/components/workouts/alias-list";
 import { PhotoAiConsent } from "@/components/body/photo-ai-consent";
 import { PreferencesForm } from "@/components/nutrition/preferences-form";
@@ -76,7 +77,7 @@ async function SettingsContent() {
           <CardTitle>AI key</CardTitle>
         </CardHeader>
         <CardContent>
-          <AiKeySettings status={aiKey} />
+          <AiKeySettings status={aiKey} defaultModels={AI_MODELS} />
         </CardContent>
       </Card>
       <Card id="apple-health">

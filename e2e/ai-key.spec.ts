@@ -39,3 +39,18 @@ test("Given a stored key, Then Settings shows only the last 4 characters and the
   await page.getByRole("button", { name: "Remove" }).click();
   await expect(page.getByText("••••LAST")).toHaveCount(0);
 });
+
+test("Given Microsoft Foundry is chosen, Then its fields and billing notice appear, and a disallowed endpoint stores nothing", async ({ page }) => {
+  const email = await signUpAndOnboard(page);
+  await page.goto("/settings");
+  await page.getByLabel("Provider").selectOption("foundry");
+  await expect(page.getByRole("note")).toContainText(/your own Azure subscription/i);
+  await expect(page.getByLabel("Foundry endpoint")).toBeVisible();
+
+  await page.getByLabel("Foundry endpoint").fill("https://my-res.services.ai.azure.com.evil.com/anthropic");
+  await page.getByLabel("Foundry API key").fill("FoundryKey0123456789abcdef");
+  await page.getByRole("button", { name: "Save key" }).click();
+  await expect(page.locator("form [role=alert]")).toContainText(/services\.ai\.azure\.com\/anthropic/);
+  const { data } = await admin().from("user_ai_keys").select("user_id").eq("user_id", await userId(email));
+  expect(data).toEqual([]);
+});

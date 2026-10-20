@@ -134,8 +134,8 @@ test("Given no AI key, Then photo and suggestions are disabled with a link and m
   const id = await userId(email);
   await admin().from("body_weights").insert({ user_id: id, local_date: new Date().toISOString().slice(0, 10), occurred_at: new Date().toISOString(), weight_kg: 80 });
   await page.goto("/eat");
-  await expect(page.getByText("Photo logging needs your Anthropic API key")).toBeVisible();
-  await expect(page.getByText("Meal suggestions needs your Anthropic API key")).toBeVisible();
+  await expect(page.getByText("Photo logging needs your AI key")).toBeVisible();
+  await expect(page.getByText("Meal suggestions needs your AI key")).toBeVisible();
   await expect(page.getByRole("button", { name: "Search food" })).toBeEnabled();
 });
 

@@ -8,6 +8,7 @@ import { createCustomExercise } from "@/server/workouts/exercises";
 import { CoachError } from "./errors";
 import { generatePlan } from "./generate";
 import { savePreferences } from "./preferences";
+import { refusingAi } from "../../../tests/ai-test-helpers";
 
 const WEEK = "2026-10-19";
 const NOW = new Date("2026-10-18T10:00:00Z");
@@ -133,6 +134,12 @@ describe("generatePlan", () => {
     expect(error).toBeInstanceOf(CoachError);
     expect(error).toMatchObject({ code: "missing_ai_key" });
     expect(error.message).toMatch(/Settings/);
+  });
+
+  it("Given Claude declines to draft the plan, Then ai_declined is raised and no plan is saved", async () => {
+    await user.client.from("training_plans").delete().eq("week_start", WEEK);
+    await expect(generatePlan(user.client, profile, WEEK, refusingAi().run, NOW)).rejects.toMatchObject({ code: "ai_declined" });
+    expect(await plans()).toEqual([]);
   });
 
   it("Given Anthropic rejects the key, Then it maps to key no longer valid", async () => {

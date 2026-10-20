@@ -89,7 +89,7 @@ export function ComparePanel(props: { a: Side; b: Side; daysApart: number; units
             </p>
           ) : !props.hasAiKey ? (
             <p className="text-sm">
-              Photo analysis needs your Anthropic API key. <Link href="/settings#ai-key" className="underline">Add it in Settings</Link>.
+              Photo analysis needs your AI key. <Link href="/settings#ai-key" className="underline">Add it in Settings</Link>.
             </p>
           ) : (
             <Button className="h-11 w-full" onClick={analyze} disabled={busy}>{busy ? "Comparing…" : "Describe what changed"}</Button>

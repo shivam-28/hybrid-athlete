@@ -9,7 +9,7 @@ export function RequiresAiKey(props: { available: boolean; feature: string; chil
     <div className="text-muted-foreground flex items-start gap-3 rounded-md border border-dashed p-3 text-sm" aria-disabled="true">
       <Sparkles className="mt-0.5 size-4 shrink-0" aria-hidden />
       <p>
-        {props.feature} needs your Anthropic API key.{" "}
+        {props.feature} needs your AI key.{" "}
         <Link href="/settings#ai-key" className="text-foreground underline">
           Add it in Settings
         </Link>

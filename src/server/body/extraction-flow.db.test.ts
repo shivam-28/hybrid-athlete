@@ -4,6 +4,7 @@ import { MissingAiKeyError } from "@/server/ai/client";
 import { createTestUser, deleteTestUser, sampleProfile, type TestUser } from "../../../tests/supabase-test-helpers";
 import type { ExtractionClient } from "./extract";
 import { discardUpload, extractFromUpload, uploadReportImage, type RunAi } from "./extraction-flow";
+import { refusingAi } from "../../../tests/ai-test-helpers";
 
 let u: TestUser;
 let other: TestUser;
@@ -90,6 +91,12 @@ describe("extractFromUpload", () => {
     const ai = vi.fn() as unknown as RunAi;
     await expect(extractFromUpload(other.client, other.id, imagePath, ai)).rejects.toMatchObject({ code: "invalid" });
     expect(ai).not.toHaveBeenCalled();
+  });
+});
+
+describe("declined requests", () => {
+  it("Given Claude declines to read the report, Then ai_declined is raised", async () => {
+    await expect(extractFromUpload(u.client, u.id, imagePath, refusingAi().run)).rejects.toMatchObject({ code: "ai_declined" });
   });
 });
 

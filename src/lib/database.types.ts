@@ -475,14 +475,14 @@ isOneToOne: false
                   ]
                 },"user_ai_keys": {
                   Row: {
-                    "auth_tag": string,"ciphertext": string,"created_at": string,"invalid_at": string | null,"iv": string,"key_version": number,"last4": string,"updated_at": string,"user_id": string
+                    "auth_tag": string,"ciphertext": string,"created_at": string,"endpoint": string | null,"fast_deployment": string | null,"invalid_at": string | null,"iv": string,"key_version": number,"last4": string,"main_deployment": string | null,"provider": string,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "auth_tag": string,"ciphertext": string,"created_at"?: string,"invalid_at"?: string | null,"iv": string,"key_version"?: number,"last4": string,"updated_at"?: string,"user_id": string
+                    "auth_tag": string,"ciphertext": string,"created_at"?: string,"endpoint"?: string | null,"fast_deployment"?: string | null,"invalid_at"?: string | null,"iv": string,"key_version"?: number,"last4": string,"main_deployment"?: string | null,"provider"?: string,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "auth_tag"?: string,"ciphertext"?: string,"created_at"?: string,"invalid_at"?: string | null,"iv"?: string,"key_version"?: number,"last4"?: string,"updated_at"?: string,"user_id"?: string
+                    "auth_tag"?: string,"ciphertext"?: string,"created_at"?: string,"endpoint"?: string | null,"fast_deployment"?: string | null,"invalid_at"?: string | null,"iv"?: string,"key_version"?: number,"last4"?: string,"main_deployment"?: string | null,"provider"?: string,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     

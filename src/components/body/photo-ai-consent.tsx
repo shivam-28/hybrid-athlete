@@ -7,7 +7,7 @@ export function PhotoAiConsent({ consentedAt }: { consentedAt: string | null }) 
     <div className="space-y-3 text-sm">
       <p>
         AI photo analysis compares two of your progress photos and describes visible changes. When you request an analysis,{" "}
-        <strong>both photos are sent to Anthropic using your own API key</strong>. Anthropic does not train on API inputs by default.
+        <strong>both photos are sent to your AI provider (Anthropic, or Microsoft Foundry if you chose it) using your own key</strong>. Anthropic does not train on API inputs by default; on Foundry, your Azure subscription&apos;s data terms apply.
         Nothing is sent unless you ask for an analysis.
       </p>
       <p className="text-muted-foreground">It never measures body fat. Any rough range it mentions is labelled as a visual impression.</p>

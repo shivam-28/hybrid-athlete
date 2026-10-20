@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import type { StructuredClient } from "@/server/ai/structured";
 import type { LookupCache, MatcherDeps } from "./matcher";
-import { buildRecommendationContext, recommendMeals, type RawOptions, type RecommendationContext } from "./recommend";
+import { buildRecommendationContext, mapAiError, recommendMeals, type RawOptions, type RecommendationContext } from "./recommend";
+import { AiRefusalError } from "@/server/ai/client";
 
 const noCache: LookupCache = { get: async () => null, set: async () => undefined };
 const offline: MatcherDeps = {
@@ -128,5 +129,18 @@ describe("recommendMeals", () => {
     expect(text).toMatch(/pre_long_run/);
     expect(text).toMatch(/carbohydrate-focused/);
     expect(text).toMatch(/post-run/i);
+  });
+});
+
+describe("declined requests", () => {
+  it("Given Claude declines, Then the refusal is not swallowed as an unreadable response", async () => {
+    const parse = vi.fn(async () => ({ stop_reason: "refusal", parsed_output: null }));
+    const client = { beta: { messages: { parse } } } as unknown as StructuredClient;
+    await expect(recommendMeals(client, context(), offline)).rejects.toBeInstanceOf(AiRefusalError);
+    expect(parse).toHaveBeenCalledTimes(1);
+  });
+
+  it("maps a refusal to ai_declined", () => {
+    expect(() => mapAiError(new AiRefusalError())).toThrow(expect.objectContaining({ code: "ai_declined" }));
   });
 });

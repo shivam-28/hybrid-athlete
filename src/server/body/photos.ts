@@ -5,7 +5,7 @@ import type { Tables } from "@/lib/database.types";
 import { daysBetween } from "@/lib/activities/dates";
 import { fieldErrorsOf } from "@/lib/body/schemas";
 import { localDate, startOfLocalDay } from "@/lib/time";
-import { AI_MODELS, InvalidAiKeyError, MissingAiKeyError, withUserAnthropic } from "@/server/ai/client";
+import { AI_DECLINED_MESSAGE, AiRefusalError, InvalidAiKeyError, MissingAiKeyError, aiMetaOf, withUserAnthropic } from "@/server/ai/client";
 import type { Profile } from "@/server/auth";
 import { ImageError } from "@/server/images/normalize";
 import { BodyError, requireRow } from "./errors";
@@ -118,7 +118,7 @@ export async function analyzePhotos(
   runAi: RunAnalysisAi = userAnalysisAi(profile.user_id),
 ): Promise<PhotoAnalysis & { id: string }> {
   if (!profile.progress_photo_ai_consent_at) {
-    throw new BodyError("consent_required", "Turn on AI photo analysis in Settings first. Photos are only sent to Anthropic after you opt in.");
+    throw new BodyError("consent_required", "Turn on AI photo analysis in Settings first. Photos are only sent to your AI provider after you opt in.");
   }
   const { data: photos } = await db.from("progress_photos").select("*").in("id", [photoAId, photoBId]);
   if (photoAId === photoBId || photos?.length !== 2) throw new BodyError("not_found", "Photo not found");
@@ -133,11 +133,16 @@ export async function analyzePhotos(
   const [imgA, imgB] = await Promise.all([load(before), load(after)]);
 
   let analysis: PhotoAnalysis | null;
+  let model = "";
   try {
-    analysis = await runAi((client) => analyzePhotoPair(client, imgA, imgB, before.pose));
+    analysis = await runAi((client) => {
+      model = aiMetaOf(client).models.main;
+      return analyzePhotoPair(client, imgA, imgB, before.pose);
+    });
   } catch (error) {
-    if (error instanceof MissingAiKeyError) throw new BodyError("no_ai_key", "Photo analysis needs your Anthropic API key.");
-    if (error instanceof InvalidAiKeyError) throw new BodyError("ai_key_invalid", "Anthropic no longer accepts your API key. Update it in Settings.");
+    if (error instanceof MissingAiKeyError) throw new BodyError("no_ai_key", "Photo analysis needs your AI key.");
+    if (error instanceof InvalidAiKeyError) throw new BodyError("ai_key_invalid", "Your AI provider no longer accepts your key. Update it in Settings.");
+    if (error instanceof AiRefusalError) throw new BodyError("ai_declined", AI_DECLINED_MESSAGE);
     if (error instanceof Anthropic.APIError) throw new BodyError("ai_unavailable", "The analysis couldn't run right now. Please try again.");
     throw error;
   }
@@ -150,7 +155,7 @@ export async function analyzePhotos(
       photo_a_id: before.id,
       photo_b_id: after.id,
       observations: analysis.observations,
-      model: AI_MODELS.main,
+      model,
       local_date: today,
       occurred_at: new Date().toISOString(),
     })

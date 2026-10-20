@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export type NutritionErrorCode = "invalid" | "not_found" | "missing_ai_key" | "ai_key_invalid" | "ai_unavailable";
+export type NutritionErrorCode = "invalid" | "not_found" | "missing_ai_key" | "ai_key_invalid" | "ai_unavailable" | "ai_declined";
 
 const STATUS: Record<NutritionErrorCode, number> = {
   invalid: 422,
@@ -8,6 +8,7 @@ const STATUS: Record<NutritionErrorCode, number> = {
   missing_ai_key: 409,
   ai_key_invalid: 409,
   ai_unavailable: 502,
+  ai_declined: 422,
 };
 
 export class NutritionError extends Error {

@@ -67,7 +67,7 @@ export function CompositionWizard(props: { units: UnitSystem; today: string; has
       const path = await uploadReport(file);
       setDocumentPath(path);
       if (!props.hasAiKey) {
-        setNotice("Reading reports automatically needs your Anthropic API key. Your file is saved; enter the values by hand.");
+        setNotice("Reading reports automatically needs your AI key. Your file is saved; enter the values by hand.");
         setForm({ values: blank });
         return;
       }
@@ -125,7 +125,7 @@ export function CompositionWizard(props: { units: UnitSystem; today: string; has
         </Field>
         {!props.hasAiKey && (
           <p className="text-muted-foreground flex gap-2 text-sm">
-            <FileUp className="size-4 shrink-0" aria-hidden /> Without an Anthropic API key the report is stored and you type the values in.
+            <FileUp className="size-4 shrink-0" aria-hidden /> Without an AI key the report is stored and you type the values in.
           </p>
         )}
         {busy && <p role="status" className="text-sm">{busy}</p>}

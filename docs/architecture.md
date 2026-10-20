@@ -1,6 +1,6 @@
 # Architecture
 
-The system overview (PWA → Next.js on Vercel → Supabase + Anthropic) is in the [README](../README.md#architecture).
+The system overview (PWA → Next.js on Vercel → Supabase + Claude via Anthropic or Microsoft Foundry) is in the [README](../README.md#architecture). AI calls go through `getAnthropicClient(userId)`, which builds an Anthropic or Foundry client from the user's stored provider and resolves their model/deployment names (`aiMetaOf`); server-side refusal fallbacks are requested on Anthropic only.
 Per-feature design decisions live in `openspec/changes/*/design.md` (and `openspec/specs/` once archived).
 
 ## Nutrition

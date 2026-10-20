@@ -4,6 +4,7 @@ import { MissingAiKeyError } from "@/server/ai/client";
 import type { StructuredClient } from "@/server/ai/structured";
 import type { Profile } from "@/server/auth";
 import { loadWeeklyReview, summarizeWeek } from "./review";
+import { refusingAi } from "../../../tests/ai-test-helpers";
 
 const WEEK = "2026-10-19";
 let user: TestUser;
@@ -48,5 +49,11 @@ describe("weekly review", () => {
     };
     await expect(summarizeWeek(user.client, profile, WEEK, runAi)).rejects.toMatchObject({ code: "missing_ai_key", message: expect.stringMatching(/Settings/) });
     expect(parse).not.toHaveBeenCalled();
+  });
+});
+
+describe("declined requests", () => {
+  it("Given Claude declines the weekly summary, Then ai_declined is raised", async () => {
+    await expect(summarizeWeek(user.client, profile, WEEK, refusingAi().run)).rejects.toMatchObject({ code: "ai_declined" });
   });
 });

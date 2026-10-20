@@ -17,6 +17,7 @@
     "seed:exercises": "tsx scripts/seed-exercises.ts"
   },
   "dependencies": {
+    "@anthropic-ai/foundry-sdk": "0.6.0",
     "@anthropic-ai/sdk": "^0.135.0",
     "@garmin/fitsdk": "^21.218.0",
     "@supabase/ssr": "^0.12.7",

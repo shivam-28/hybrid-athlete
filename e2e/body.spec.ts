@@ -102,7 +102,7 @@ test("Given an uploaded report with a misread value, When the user corrects 81.5
 test("Given no AI key, When a report is uploaded, Then it is stored and an empty manual form is shown", async ({ page }) => {
   await signUpAndOnboard(page);
   await page.goto("/body/composition/new");
-  await expect(page.getByText("needs your Anthropic API key").first()).toBeVisible();
+  await expect(page.getByText("needs your AI key").first()).toBeVisible();
   await page.getByLabel("Upload a report (photo or PDF)").setInputFiles({ name: "report.jpg", mimeType: "image/jpeg", buffer: await gpsJpeg() });
   await expect(page.getByRole("status").filter({ hasText: "Your file is saved" })).toBeVisible();
   await expect(page.getByLabel("Body fat (%)")).toHaveValue("");

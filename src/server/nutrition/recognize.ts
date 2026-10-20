@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import type { DraftItem, MealDraft } from "@/lib/nutrition/draft";
 import { emptyNutrients, type Nutrients } from "@/lib/nutrition/nutrients";
-import { InvalidAiKeyError, MissingAiKeyError, withUserAnthropic } from "@/server/ai/client";
+import { AI_DECLINED_MESSAGE, AiRefusalError, InvalidAiKeyError, MissingAiKeyError, withUserAnthropic } from "@/server/ai/client";
 import { parseStructured, type StructuredClient } from "@/server/ai/structured";
 import type { Db } from "@/server/body/weights";
 import { NutritionError } from "./errors";
@@ -83,7 +83,7 @@ async function ask(client: StructuredClient, input: { imageBase64?: string; desc
     return await parseStructured(client, { system: SYSTEM, content, schema: mealSchema, maxTokens: 4096 });
   } catch (error) {
     // Provider failures propagate; anything else is unusable output and gets the retry.
-    if (error instanceof Anthropic.APIError) throw error;
+    if (error instanceof Anthropic.APIError || error instanceof AiRefusalError) throw error;
     return null;
   }
 }
@@ -146,11 +146,12 @@ export async function recognizeForUser(
     result = await runAi((client) => recognizeMeal(client, { imageBase64, description }, deps ?? defaultMatcherDeps()));
   } catch (error) {
     if (error instanceof MissingAiKeyError) {
-      throw new NutritionError("missing_ai_key", "Photo and description logging need your Anthropic API key. You can still search foods by name.");
+      throw new NutritionError("missing_ai_key", "Photo and description logging need your AI key. You can still search foods by name.");
     }
     if (error instanceof InvalidAiKeyError) {
-      throw new NutritionError("ai_key_invalid", "Anthropic no longer accepts your API key. Update it in Settings, or search foods by name.");
+      throw new NutritionError("ai_key_invalid", "Your AI provider no longer accepts your key. Update it in Settings, or search foods by name.");
     }
+    if (error instanceof AiRefusalError) throw new NutritionError("ai_declined", AI_DECLINED_MESSAGE);
     if (error instanceof Anthropic.APIError) {
       throw new NutritionError("ai_unavailable", "The meal couldn't be analysed right now. Try again, or search foods by name.");
     }

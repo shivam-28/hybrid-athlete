@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { AiRefusalError } from "@/server/ai/client";
 import { analyzePhotoPair, type AnalysisClient } from "./photo-analysis";
 
 const img = { base64: "AAAA", date: "2026-08-01" };
@@ -31,9 +32,12 @@ describe("analyzePhotoPair", () => {
     expect(result!.visualImpression).toBe("Roughly 13–15 % body fat");
   });
 
-  it("Given a refusal, unparseable output or no observations left, Then null", async () => {
+  it("Given a refusal, Then AiRefusalError propagates (shown as 'Claude declined')", async () => {
+    await expect(analyzePhotoPair(client({ observations: ["x"], visual_impression: null }, "refusal").c, img, img2, "front")).rejects.toBeInstanceOf(AiRefusalError);
+  });
+
+  it("Given unparseable output or no observations left, Then null", async () => {
     expect(await analyzePhotoPair(client(null).c, img, img2, "front")).toBeNull();
-    expect(await analyzePhotoPair(client({ observations: ["x"], visual_impression: null }, "refusal").c, img, img2, "front")).toBeNull();
     expect(await analyzePhotoPair(client({ observations: ["About 12 % body fat"], visual_impression: null }).c, img, img2, "front")).toBeNull();
   });
 });

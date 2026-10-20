@@ -7,6 +7,7 @@ export type CoachErrorCode =
   | "missing_ai_key"
   | "ai_key_invalid"
   | "ai_unavailable"
+  | "ai_declined"
   | "plan_invalid"
   | "warnings_unacknowledged";
 
@@ -17,6 +18,7 @@ const STATUS: Record<CoachErrorCode, number> = {
   missing_ai_key: 409,
   ai_key_invalid: 409,
   ai_unavailable: 502,
+  ai_declined: 422,
   plan_invalid: 502,
   warnings_unacknowledged: 409,
 };

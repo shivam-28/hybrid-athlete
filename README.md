@@ -17,7 +17,7 @@ Built for iPhone (add to home screen) and desktop browsers. Hosted by one person
 | Nutrition | Meal photo / description → itemised nutrients (USDA + Open Food Facts), daily calorie and macro targets that follow your training, rest-of-day suggestions that respect allergies |
 | Coach | Weekly hybrid plan (strength + running) drafted by AI and checked against deterministic safety rules (volume ramp, 80/20, rest day, no heavy legs before long runs); daily readiness check-in with session adjustments; auto-completion from logged workouts and synced runs; Sunday weekly review |
 | Privacy | Row-level security on every table, private file storage, data export, hard account delete |
-| AI | Bring your own Anthropic API key (encrypted at rest; AI usage is billed to you) |
+| AI | Bring your own Claude access: an Anthropic API key or a Microsoft Foundry deployment (Settings → AI key; encrypted at rest; usage is billed to you) |
 
 Coaching ships in a later release — see `openspec/changes/`.
 
@@ -37,7 +37,7 @@ graph LR
         DB[(Postgres + RLS)]
         ST[(Private storage)]
     end
-    AN[Anthropic API<br/>user's own key]
+    AN[Claude: Anthropic API or<br/>Microsoft Foundry<br/>user's own key]
 
     UI --> PX --> RSC
     RSC --> AUTH
@@ -54,7 +54,7 @@ graph LR
     style AN fill:#1e293b,stroke:#f59e0b,color:#e2e8f0
 ```
 
-Stack: Next.js 16 (App Router, React 19, TypeScript strict), Tailwind CSS 4 + shadcn/ui, Supabase (Postgres, Auth, Storage), Anthropic Claude API, Vitest + Playwright.
+Stack: Next.js 16 (App Router, React 19, TypeScript strict), Tailwind CSS 4 + shadcn/ui, Supabase (Postgres, Auth, Storage), Anthropic Claude API (or Claude on Microsoft Foundry), Vitest + Playwright.
 
 Specs and design decisions live in [`openspec/`](openspec/) (spec-driven development with [OpenSpec](https://github.com/Fission-AI/OpenSpec)).
 
@@ -121,7 +121,7 @@ You need a free [Supabase](https://supabase.com) project and a free [Vercel](htt
 
 6. **Install on iPhone:** open the site in Safari → Share → **Add to Home Screen**, then sign in with the emailed code.
 
-Notes: Supabase's free tier pauses projects after a week without activity. Anthropic does not train on API inputs by default; AI features only run for users who add their own key.
+Notes: Supabase's free tier pauses projects after a week without activity. AI features only run for users who add their own key. Anthropic does not train on API inputs by default; Foundry users are covered by their own Azure subscription's terms. Foundry users need Claude deployed in their resource (default deployment names `claude-opus-5-5` and `claude-haiku-4-5`, or enter custom names in Settings).
 
 ## License
 

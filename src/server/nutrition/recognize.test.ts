@@ -6,6 +6,7 @@ import type { StructuredClient } from "@/server/ai/structured";
 import { NutritionError } from "./errors";
 import type { LookupCache, MatcherDeps } from "./matcher";
 import { recognizeMeal, recognizeForUser, type RawMealItem } from "./recognize";
+import { refusingAi } from "../../../tests/ai-test-helpers";
 
 const per100 = { kcal: 165, protein_g: 31, carb_g: 0, fat_g: 3.6, fiber_g: 0, sugar_g: 0, satfat_g: 1, sodium_mg: 74 };
 const item = (patch: Partial<RawMealItem> = {}): RawMealItem => ({
@@ -125,5 +126,16 @@ describe("recognizeForUser", () => {
     await expect(recognizeForUser(null as never, "u1", { photoPath: "u2/x.jpg" }, async () => null as never, deps())).rejects.toMatchObject({
       code: "invalid",
     });
+  });
+});
+
+describe("declined requests", () => {
+  it("Given Claude declines a meal photo, Then ai_declined is raised and no retry runs", async () => {
+    const { run, parse } = refusingAi();
+    await expect(recognizeForUser(null as never, "u1", { description: "toast" }, run, deps())).rejects.toMatchObject({
+      code: "ai_declined",
+      message: expect.stringMatching(/declined/i),
+    });
+    expect(parse).toHaveBeenCalledTimes(1);
   });
 });

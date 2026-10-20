@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export type BodyErrorCode = "invalid" | "not_found" | "no_ai_key" | "ai_key_invalid" | "ai_unavailable" | "consent_required";
+export type BodyErrorCode = "invalid" | "not_found" | "no_ai_key" | "ai_key_invalid" | "ai_unavailable" | "ai_declined" | "consent_required";
 
 const STATUS: Record<BodyErrorCode, number> = {
   invalid: 422,
@@ -8,6 +8,7 @@ const STATUS: Record<BodyErrorCode, number> = {
   no_ai_key: 409,
   ai_key_invalid: 409,
   ai_unavailable: 502,
+  ai_declined: 422,
   consent_required: 403,
 };
 

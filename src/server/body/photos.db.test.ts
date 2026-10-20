@@ -4,6 +4,7 @@ import type { Profile } from "@/server/auth";
 import { createTestUser, deleteTestUser, sampleProfile, type TestUser } from "../../../tests/supabase-test-helpers";
 import type { AnalysisClient } from "./photo-analysis";
 import { analyzePhotos, comparePhotos, deletePhoto, listPhotos, setPhotoAiConsent, uploadPhoto, type RunAnalysisAi } from "./photos";
+import { refusingAi } from "../../../tests/ai-test-helpers";
 
 let u: TestUser;
 let other: TestUser;
@@ -116,6 +117,13 @@ describe("AI analysis consent and analysis", () => {
     const { data } = await u.client.from("progress_photo_analyses").select("*");
     expect(data).toHaveLength(1);
     expect(JSON.stringify(data)).not.toContain("15–17");
+  });
+
+  it("Given Claude declines the comparison, Then ai_declined is raised and nothing is stored", async () => {
+    const before = (await u.client.from("progress_photo_analyses").select("id")).data?.length ?? 0;
+    const [a, b] = await pair();
+    await expect(analyzePhotos(u.client, profile, a, b, refusingAi().run)).rejects.toMatchObject({ code: "ai_declined" });
+    expect((await u.client.from("progress_photo_analyses").select("id")).data).toHaveLength(before);
   });
 
   it("Given photos with different poses, Then analysis is rejected", async () => {

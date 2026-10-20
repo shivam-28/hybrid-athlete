@@ -214,5 +214,5 @@ test("Given no AI key, Then the weekly review shows every figure and explains th
   await expect(page.getByText("No accepted plan for this week.")).toBeVisible();
   await expect(page.getByText("Running", { exact: true })).toBeVisible();
   await expect(page.getByRole("row", { name: /quads/i })).toBeVisible();
-  await expect(page.getByText("The AI coach summary needs your Anthropic API key.")).toBeVisible();
+  await expect(page.getByText("The AI coach summary needs your AI key.")).toBeVisible();
 });

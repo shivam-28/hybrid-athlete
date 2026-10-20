@@ -1,7 +1,7 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { checkConsistency, deriveComposition, type ConsistencyWarning } from "@/lib/body/composition";
-import { InvalidAiKeyError, MissingAiKeyError, withUserAnthropic } from "@/server/ai/client";
+import { AI_DECLINED_MESSAGE, AiRefusalError, InvalidAiKeyError, MissingAiKeyError, withUserAnthropic } from "@/server/ai/client";
 import { ImageError } from "@/server/images/normalize";
 import { BodyError } from "./errors";
 import { extractBodyComposition, type ExtractionClient, type ExtractionDraft } from "./extract";
@@ -42,11 +42,12 @@ export async function extractFromUpload(db: Db, userId: string, documentPath: st
     result = await runAi((client) => extractBodyComposition(client, doc));
   } catch (error) {
     if (error instanceof MissingAiKeyError) {
-      throw new BodyError("no_ai_key", "Reading reports automatically needs your Anthropic API key. You can enter the values by hand below.");
+      throw new BodyError("no_ai_key", "Reading reports automatically needs your AI key. You can enter the values by hand below.");
     }
     if (error instanceof InvalidAiKeyError) {
-      throw new BodyError("ai_key_invalid", "Anthropic no longer accepts your API key. Update it in Settings, or enter the values by hand.");
+      throw new BodyError("ai_key_invalid", "Your AI provider no longer accepts your key. Update it in Settings, or enter the values by hand.");
     }
+    if (error instanceof AiRefusalError) throw new BodyError("ai_declined", AI_DECLINED_MESSAGE);
     if (error instanceof Anthropic.APIError) {
       throw new BodyError("ai_unavailable", "The report couldn't be read right now. Try again, or enter the values by hand.");
     }

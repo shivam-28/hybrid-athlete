@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { AiRefusalError } from "@/server/ai/client";
 import { extractBodyComposition, type ExtractionClient, type RawExtraction } from "./extract";
 
 const NULLS: RawExtraction = {
@@ -69,9 +70,12 @@ describe("extractBodyComposition", () => {
     expect(result.kind === "draft" && result.notFound).toContain("test_date");
   });
 
-  it("Given unparseable output or a refusal, Then 'unreadable'", async () => {
+  it("Given unparseable output, Then 'unreadable'", async () => {
     expect(await extractBodyComposition(client({ parsed_output: null }).client, doc)).toEqual({ kind: "unreadable" });
-    expect(await extractBodyComposition(client({ parsed_output: NULLS, stop_reason: "refusal" }).client, doc)).toEqual({ kind: "unreadable" });
+  });
+
+  it("Given a refusal, Then AiRefusalError propagates (shown as 'Claude declined')", async () => {
+    await expect(extractBodyComposition(client({ parsed_output: NULLS, stop_reason: "refusal" }).client, doc)).rejects.toBeInstanceOf(AiRefusalError);
   });
 
   it("Given a provider error, Then it propagates", async () => {

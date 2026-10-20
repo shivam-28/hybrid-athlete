@@ -6,7 +6,7 @@ import { MEAL_TYPES, type MealType, type NutrientSource } from "@/lib/nutrition/
 import { localClock, remainingSlots } from "@/lib/nutrition/meal-time";
 import { emptyNutrients, scaleNutrients, type Nutrients } from "@/lib/nutrition/nutrients";
 import type { Targets } from "@/lib/nutrition/targets";
-import { InvalidAiKeyError, MissingAiKeyError } from "@/server/ai/client";
+import { AI_DECLINED_MESSAGE, AiRefusalError, InvalidAiKeyError, MissingAiKeyError } from "@/server/ai/client";
 import { parseStructured, type StructuredClient } from "@/server/ai/structured";
 import { NutritionError } from "./errors";
 import { matchItem, type MatcherDeps } from "./matcher";
@@ -157,7 +157,7 @@ export async function recommendMeals(
     try {
       raw = await parseStructured(client, { system: SYSTEM, schema: optionsSchema, maxTokens: 8192, content: [{ type: "text", text: promptFor(ctx, mode, reasons) }] });
     } catch (error) {
-      if (error instanceof Anthropic.APIError) throw error;
+      if (error instanceof Anthropic.APIError || error instanceof AiRefusalError) throw error;
       raw = null;
     }
     const options = raw ? await Promise.all(raw.options.slice(0, 5).map((o) => recompute(o, deps))) : [];
@@ -199,8 +199,9 @@ export function buildRecommendationContext(input: {
 }
 
 export function mapAiError(error: unknown): never {
-  if (error instanceof MissingAiKeyError) throw new NutritionError("missing_ai_key", "Meal suggestions need your Anthropic API key. Add it in Settings.");
-  if (error instanceof InvalidAiKeyError) throw new NutritionError("ai_key_invalid", "Anthropic no longer accepts your API key. Update it in Settings.");
+  if (error instanceof MissingAiKeyError) throw new NutritionError("missing_ai_key", "Meal suggestions need your AI key. Add it in Settings.");
+  if (error instanceof InvalidAiKeyError) throw new NutritionError("ai_key_invalid", "Your AI provider no longer accepts your key. Update it in Settings.");
+  if (error instanceof AiRefusalError) throw new NutritionError("ai_declined", AI_DECLINED_MESSAGE);
   if (error instanceof Anthropic.APIError) throw new NutritionError("ai_unavailable", "Suggestions aren't available right now. Please try again shortly.");
   throw error;
 }
